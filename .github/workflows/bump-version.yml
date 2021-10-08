@@ -1,0 +1,38 @@
+name: Bump version number
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bump-version:
+    name: Bump version number
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CI_GITHUB_TOKEN }}
+
+    - name: Bump version patch
+      run: |
+        grep -E "[0-9]+\.[0-9]+\.[0-9]+" FluentIcons.podspec | python3 -c """
+        import sys
+        import os
+        current_version = sys.stdin.read().strip().split(\"'\")[1]
+        major, minor, patch = current_version.split('.')
+        os.system(f'echo \"NEW_VERSION={major}.{minor}.{int(patch) + 1}\" >> \$GITHUB_ENV')
+        """
+
+    - name: Config git credentials
+      run: git config user.email "flubuild@gmail.com" && git config user.name "Fluent Build System"
+
+    - name: Commit version number change
+      run: |
+        git add -A
+        git commit -m "Update version number to $NEW_VERSION"
+
+    - name: Push release
+      run: |
+        REMOTE_REPO="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+        git push $REMOTE_REPO HEAD:master --follow-tags --tags
+
