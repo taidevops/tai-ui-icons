@@ -23,8 +23,14 @@ jobs:
         os.system(f'echo \"NEW_VERSION={major}.{minor}.{int(patch) + 1}\" >> \$GITHUB_ENV')
         """
 
+    # Needs to be "-E" instead of "-r" on macOS
+    - name: Replace version numbers in README.md
+      run: |
+        sed -i.bk -r "s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" README.md
+        rm README.md.bk
+
     - name: Config git credentials
-      run: git config user.email "flubuild@gmail.com" && git config user.name "Fluent Build System"
+      run: git config user.email "taiui@gmail.com" && git config user.name "UI Build System"
 
     - name: Commit version number change
       run: |
