@@ -1,11 +1,9 @@
 {
-  "name": "fluent-icons-library",
+  "name": "icons-library",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {},
-  "author": "Microsoft Inc.",
-  "license": "Microsoft",
   "devDependencies": {
     "avocado": "1.0.0",
     "icon-font-generator": "^2.1.10",

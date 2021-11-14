@@ -3,6 +3,7 @@ npm-debug.log
 *.sublime-workspace
 tmp
 dev_tests/automatic/screenshots
+dist/
 !dist/.keep
 *.DS_Store
 
