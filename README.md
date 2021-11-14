@@ -24,5 +24,5 @@ repositories {
 Include the following dependency in your project's `build.gradle`
 
 ```groovy
-implementation 'com:system-icons:1.1.150@aar'
+implementation 'com:system-icons:0.0.2@aar'
 ```
