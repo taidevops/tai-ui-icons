@@ -29,6 +29,12 @@ jobs:
         sed -i.bk -r "s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" README.md
         rm README.md.bk
 
+    # Needs to be "-E" instead of "-r" on macOS
+    - name: Replace version number in Podspec
+      run: |
+        sed -i.bk -r "s/[0-9]+\.[0-9]+\.[0-9]+/$NEW_VERSION/g" ios/FluentIcons.podspec
+        rm ios/FluentIcons.podspec.bk        
+
     - name: Config git credentials
       run: git config user.email "taiui@gmail.com" && git config user.name "UI Build System"
 
