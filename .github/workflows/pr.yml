@@ -1,0 +1,49 @@
+name: Pull request validation
+
+on: pull_request
+
+jobs:
+  valid-asset-names:
+    name: Validate Asset Names
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Check asset directories are valid for Windows
+      run: |
+        ls assets | python3 -c """
+        import sys
+        assets_dir = sys.stdin.read().strip().split('\n')
+        invalid_asset_dirs = []
+        for dir in assets_dir:
+          if dir.endswith(' '):
+            invalid_asset_dirs.append(dir)
+
+        if invalid_asset_dirs:
+          print('Invalid asset directories, remove the trailing space')
+          print(invalid_asset_dirs)
+          exit(1)
+        """
+
+  build-svg:
+    name: Build svg library
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node 11
+      uses: actions/setup-node@v1
+      with:
+        node-version: 11.x
+
+    - run: npm install
+      working-directory: importer
+
+    - run: npm install
+      working-directory: packages/svg-icons
+
+    - name: Run build
+      run: npm run build
+      working-directory: packages/svg-icons

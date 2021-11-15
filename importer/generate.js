@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT license.
-
 const fs = require("fs");
 const path = require("path");
 const process = require("process");
@@ -82,74 +79,13 @@ function processFolder(srcPath, destPath, folderDepth) {
           return;
         }
 
-        // Apply 'fluent_' prefix
-        if (file.indexOf("_fluent_") < 0) {
-          file = file.replace("ic_", "ic_fluent_");
-        }
         var destFile = path.join(destPath, file);
+        console.log(destFile);
         if (!fs.existsSync(destPath)) {
           fs.mkdirSync(destPath)
         }
         fs.copyFileSync(srcFile, destFile);
-        // Generate selector if both filled/regular styles are available
-        if (SELECTOR && file.endsWith(SVG_EXTENSION)) {
-          var index = file.lastIndexOf(ICON_OUTLINE_STYLE);
-          if (index == -1) {
-            index = file.lastIndexOf(ICON_FILLED_STYLE);
-          }
-          if (index != -1) {
-            var name = file.substring(0, index)
-            if (!iconNames.has(name)) {
-              iconNames.add(name);
-            } else {
-              generateSelector(destPath, name)
-            }
-            if (TARGET === 'react') {
-              generateReact(destPath, file.substring(0, file.lastIndexOf(SVG_EXTENSION)), srcFile)
-            }
-          }
-        }
       });
     });
-  });
-}
-
-function generateSelector(destPath, iconName) {
-  var selectorFile = path.join(destPath, iconName + SELECTOR_SUFFIX + XML_EXTENSION);
-  var code = 
-`<?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (c) ${date.getFullYear()}.
-  ~ Microsoft Corporation. All rights reserved.
-  -->
-
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/${iconName}${ICON_FILLED_STYLE}" android:state_activated="true"/>
-    <item android:drawable="@drawable/${iconName}${ICON_FILLED_STYLE}" android:state_checked="true"/>
-    <item android:drawable="@drawable/${iconName}${ICON_FILLED_STYLE}" android:state_selected="true"/>
-    <item android:drawable="@drawable/${iconName}${ICON_OUTLINE_STYLE}"/>
-</selector>
-`;
-  fs.writeFile(selectorFile, code, (err) => {
-    if (err) throw err; 
-  });
-}
-
-function generateReact(destPath, iconName, srcFile) {
-  iconName = iconName.replace("ic_fluent_", "")
-  iconName = _.camelCase(iconName)
-  iconName = iconName.replace(iconName.substring(0, 1), iconName.substring(0, 1).toUpperCase())
-  var iconContent = fs.readFileSync(srcFile, { encoding: "utf8"})
-  var selectorFile = path.join(destPath, iconName + REACT_SUFFIX + TSX_EXTENSION);
-  var code = 
-`import * as React from 'react';
-  const ${iconName + REACT_SUFFIX} = () => {
-    return(
-    ${iconContent}
-  )};
-export default ${iconName + REACT_SUFFIX};
-`;
-  fs.writeFile(selectorFile, code, (err) => {
-    if (err) throw err; 
   });
 }
